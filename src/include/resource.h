@@ -2,7 +2,7 @@
 #define RESOURCE_H
 
 #include <stdint.h>
-#include "manager.h"
+#include "globals.h"
 
 void request (uint8_t r_id, uint8_t requested);
 

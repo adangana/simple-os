@@ -1,5 +1,6 @@
 #include <assert.h>
-#include "list.h"
+#include <stdint.h>
+#include "../include/list.h"
 
 /* Returns True if the element is the head of the list. */
 bool is_head (list_elem_t *elem)
@@ -92,6 +93,11 @@ void list_insert (list_elem_t *after, list_elem_t *elem)
 void list_push_front (list_t *list, list_elem_t *elem)
 {
     list_insert (list_begin (list), elem);
+}
+
+void list_push_back (list_t *list, list_elem_t *elem)
+{
+    list_insert (list_end (list), elem);
 }
 
 /* Removes elem from its list and returns the element that follows it. */

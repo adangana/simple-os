@@ -2,7 +2,7 @@
 #define PROCESS_H
 
 #include <stdint.h>
-#include "manager.h"
+#include "globals.h"
 
 void create (priority_t level);
 

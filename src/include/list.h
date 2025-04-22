@@ -1,10 +1,14 @@
+#ifndef LIST_H
+#define LIST_H
+
+#include <stdint.h>
 #include <stdbool.h>
 #include <stddef.h>
 
 // Linked list element
 typedef struct list_elem 
 {
-    void *data;
+    uint8_t id;
     struct list_elem *prev;
     struct list_elem *next;
 }
@@ -37,6 +41,7 @@ typedef bool list_less_func (const list_elem_t *a, const list_elem_t *b,
 // List insertion
 void list_insert (list_elem_t *after, list_elem_t *elem);
 void list_push_front (list_t *list, list_elem_t *elem);
+void list_push_back (list_t *list, list_elem_t *elem);
 
 // List removal
 list_elem_t *list_remove (list_elem_t *elem);
@@ -51,4 +56,6 @@ bool is_start (list_elem_t *elem);
 bool is_interior (list_elem_t *elem);
 bool is_tail (list_elem_t *elem);
 bool is_end (list_elem_t *elem);
+
+#endif
 

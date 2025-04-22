@@ -1,5 +1,5 @@
-#ifndef MANAGER_H
-#define MANAGER_H
+#ifndef GLOBALS_H 
+#define GLOBALS_H 
 
 #include <stdint.h>
 #include "list.h"
@@ -11,28 +11,31 @@
 /* Process state. */
 typedef enum
 {
-    PROCESS_BLOCKED,
-    PROCESS_READY
+    PROCESS_UNINITIALIZED = -1,
+    PROCESS_BLOCKED = 0,
+    PROCESS_READY = 1
 }
 process_state_t;
 
 /* Process priority level. */
 typedef enum
 {
-    LOW_PRIORITY,
-    MEDIUM_PRIORITY,
-    HIGH_PRIORITY
+    PRIORITY_UNINITIALIZED = -1,
+    PRIORITY_LOW = 0,
+    PRIORITY_MEDIUM = 1,
+    PRIORITY_HIGH = 2
 } 
 priority_t;
 
 /* A Process Control Block (PCB) entry. */
 typedef struct 
 {
-    const priority_t priority;  // Process priority level.
-    process_state_t state;            // Process state.
-    uint8_t parent;                   // PCB table index of parent process.
-    list_t* children;                 /* Linked list of indices of child
-                                         process. */
+    priority_t priority;    // Process priority level.
+    process_state_t state;  // Process state.
+    uint8_t parent;         // PCB table index of parent process.
+    list_t children;        // Linked list of indices of child processes.
+    list_t resources;       /* Linked list of resources that process is
+                               currently holding. */
 } 
 pcb_t;
 
@@ -49,16 +52,16 @@ resource_units_t;
 /* A Resource Control Block (RCB) entry. */
 typedef struct
 {
-    const resource_units_t inventory;  // Inital number of units (1, 2, or 3).
-    resource_units_t state;            // Number of units available.
-    list_t *waitlist;                  /* Linked list of process indices and 
-                                          how many units they requested. */
+    resource_units_t inventory;  // Inital number of units (1, 2, or 3).
+    resource_units_t state;      // Number of units available.
+    list_t waitlist;             /* Linked list of process indices and 
+                                     how many units they requested. */
 }
 rcb_t;
 
+extern list_t ready_lists[NUM_PRIORITY_LEVELS];
 extern pcb_t pcb_table[NUM_PCB];
 extern rcb_t rcb_table[NUM_RCB];
-extern list_t *ready_lists[NUM_PRIORITY_LEVELS];
 extern uint8_t current_process;
 
 #endif

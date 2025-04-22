@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <assert.h>
 #include <malloc.h>
-#include "../lib/list.h"
+#include "../include/list.h"
 
 void test_simple (void) 
 {
