@@ -36,8 +36,6 @@ typedef bool list_less_func (const list_elem_t *a, const list_elem_t *b,
 
 // List insertion
 void list_insert (list_elem_t *after, list_elem_t *elem);
-void list_insert_ordered (list_t *list, list_elem_t *elem, 
-                          list_less_func *func, void *aux);
 void list_push_front (list_t *list, list_elem_t *elem);
 
 // List removal

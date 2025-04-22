@@ -89,26 +89,6 @@ void list_insert (list_elem_t *after, list_elem_t *elem)
     after->prev = elem;
 }
 
-/* Inserts elem into the linked list in the order given by the comparator
-   function. */
-void list_insert_ordered (list_t *list, list_elem_t *elem, 
-                          list_less_func *cmp, void *aux)
-{
-    list_elem_t *e;
-
-    assert (list != NULL);
-    assert (elem != NULL);
-    assert (cmp != NULL);
-
-    for (e = list_begin (list); e != list_end (list); e = list_next (e))
-    {
-        if (cmp (elem, e, aux)) 
-            break;
-    }
-
-    list_insert (e, elem);
-}
-
 void list_push_front (list_t *list, list_elem_t *elem)
 {
     list_insert (list_begin (list), elem);
