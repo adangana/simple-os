@@ -101,12 +101,26 @@ void list_push_back (list_t *list, list_elem_t *elem)
 }
 
 /* Removes elem from its list and returns the element that follows it. */
-list_elem_t *list_remove (list_elem_t *elem)
+list_elem_t *list_remove_elem (list_elem_t* elem)
 {
     assert (is_interior (elem)); 
     elem->prev->next = elem->next;
     elem->next->prev = elem->prev;
     return elem->next;
+}
+
+list_elem_t *list_remove_id (list_t *list, uint8_t id)
+{
+    assert (list != NULL);
+
+    list_elem_t *e;
+    for (e = list_begin (list); e != list_end (list); e = list_next (e))
+    {
+        if (e->id == id)
+            break;
+    }
+
+    return list_remove_elem (e);
 }
 
 /* Returns the size of the list. */
