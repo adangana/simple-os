@@ -63,5 +63,7 @@ extern list_t ready_lists[NUM_PRIORITY_LEVELS];
 extern pcb_t pcb_table[NUM_PCB];
 extern rcb_t rcb_table[NUM_RCB];
 extern uint8_t current_process;
+extern list_elem_t *id_to_elem[NUM_PCB];
 
 #endif
+

@@ -44,8 +44,9 @@ void list_push_front (list_t *list, list_elem_t *elem);
 void list_push_back (list_t *list, list_elem_t *elem);
 
 // List removal
-list_elem_t *list_remove_elem (list_elem_t* elem);
-list_elem_t *list_remove_id (uint8_t id);
+list_elem_t *list_remove_elem (list_elem_t *elem);
+list_elem_t *list_remove_id (list_t *list, uint8_t id);
+list_elem_t *list_pop_front (list_t *list);
 
 // List properties
 size_t list_size (list_t *list);

@@ -112,7 +112,6 @@ list_elem_t *list_remove_elem (list_elem_t* elem)
 list_elem_t *list_remove_id (list_t *list, uint8_t id)
 {
     assert (list != NULL);
-
     list_elem_t *e;
     for (e = list_begin (list); e != list_end (list); e = list_next (e))
     {
@@ -121,6 +120,12 @@ list_elem_t *list_remove_id (list_t *list, uint8_t id)
     }
 
     return list_remove_elem (e);
+}
+
+list_elem_t *list_pop_front (list_t *list)
+{
+    assert (list != NULL);
+    return list_remove_elem (list_begin (list));
 }
 
 /* Returns the size of the list. */
