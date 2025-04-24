@@ -5,11 +5,13 @@ void scheduler (void)
 {
     uint8_t p_id;
     int i;
-    
+
     // Getting head of first non-empty highest-priority ready list 
     for (i = PRIORITY_HIGH; i >= PRIORITY_LOW; i--)
+    {
         if (!list_empty (&ready_lists[i]))
             break;
+    }
 
     p_id = list_begin (&ready_lists[i])->id;
   
@@ -24,8 +26,9 @@ void scheduler (void)
 void timeout (void)
 {
     // Moving current process from head of its RL to end of its RL 
-    list_t rl = ready_lists[pcb_table[current_process].priority];
-    list_push_back (&rl, list_pop_front (&rl));
+    list_t *rl = &ready_lists[pcb_table[current_process].priority];
+    list_elem_t *front = list_pop_front (rl);
 
+    list_push_back (rl, front);
     scheduler ();
 }

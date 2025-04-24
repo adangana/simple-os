@@ -1,5 +1,4 @@
 #include <assert.h>
-#include <stdint.h>
 #include "../include/list.h"
 
 /* Returns True if the element is the head of the list. */
@@ -42,11 +41,6 @@ void list_init (list_t *list)
     list->tail.next = NULL;
 }
 
-list_elem_t *list_begin (list_t *list)
-{
-    assert (list != NULL);
-    return list->head.next;
-}
 
 list_elem_t *list_next (list_elem_t *elem)
 {
@@ -60,22 +54,28 @@ list_elem_t *list_prev (list_elem_t *elem)
     return elem->prev;
 }
 
-list_elem_t *list_end (list_t *list)
-{
-    assert (list != NULL);
-    return &list->tail;
-}
-
 list_elem_t *list_head (list_t *list)
 {
     assert (list != NULL);
     return &list->head;
 }
 
+list_elem_t *list_begin (list_t *list)
+{
+    assert (list != NULL);
+    return list->head.next;
+}
+
 list_elem_t *list_tail (list_t *list)
 {
     assert (list != NULL);
     return &list->tail;
+}
+
+list_elem_t *list_end (list_t *list)
+{
+    assert (list != NULL);
+    return list->tail.prev;
 }
 
 /* Inserts elem before after in the linked list. */
@@ -97,23 +97,23 @@ void list_push_front (list_t *list, list_elem_t *elem)
 
 void list_push_back (list_t *list, list_elem_t *elem)
 {
-    list_insert (list_end (list), elem);
+    list_insert (list_tail (list), elem);
 }
 
-/* Removes elem from its list and returns the element that follows it. */
+/* Removes elem from its list and returns it. */
 list_elem_t *list_remove_elem (list_elem_t* elem)
 {
     assert (is_interior (elem)); 
     elem->prev->next = elem->next;
     elem->next->prev = elem->prev;
-    return elem->next;
+    return elem;
 }
 
 list_elem_t *list_remove_id (list_t *list, uint8_t id)
 {
     assert (list != NULL);
     list_elem_t *e;
-    for (e = list_begin (list); e != list_end (list); e = list_next (e))
+    for (e = list_begin (list); e != list_tail (list); e = list_next (e))
     {
         if (e->id == id)
             break;
@@ -124,8 +124,10 @@ list_elem_t *list_remove_id (list_t *list, uint8_t id)
 
 list_elem_t *list_pop_front (list_t *list)
 {
-    assert (list != NULL);
-    return list_remove_elem (list_begin (list));
+    assert (!list_empty (list));
+    list_elem_t *front = list_begin (list);
+    list_remove_elem (front);
+    return front;
 }
 
 /* Returns the size of the list. */
@@ -136,7 +138,7 @@ size_t list_size (list_t *list)
     list_elem_t *e;
     size_t cnt = 0;
 
-    for (e = list_begin (list); e != list_end (list); e = list_next (e))
+    for (e = list_begin (list); e != list_tail (list); e = list_next (e))
         cnt++;
 
     return cnt;
@@ -146,6 +148,5 @@ size_t list_size (list_t *list)
 bool list_empty (list_t *list)
 {
     assert (list != NULL);
-
-    return list_begin (list) == list_end (list);
+    return list_begin (list) == list_tail (list);
 }

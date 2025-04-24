@@ -6,6 +6,6 @@
 
 void create (priority_t level);
 
-void destroy (uint8_t p_id);
+uint8_t destroy (uint8_t p_id);
 
 #endif
