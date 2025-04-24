@@ -27,6 +27,16 @@ typedef enum
 } 
 priority_t;
 
+/* Number of resource units. */
+typedef enum
+{
+    ZERO_UNITS,
+    ONE_UNITS,
+    TWO_UNITS,
+    THREE_UNITS
+}
+resource_units_t;
+
 /* A Process Control Block (PCB) entry. */
 typedef struct 
 {
@@ -39,25 +49,24 @@ typedef struct
 } 
 pcb_t;
 
-/* Number of resource units. */
-typedef enum
-{
-    ZERO_UNITS,
-    ONE_UNITS,
-    TWO_UNITS,
-    THREE_UNITS
-}
-resource_units_t;
-
 /* A Resource Control Block (RCB) entry. */
 typedef struct
 {
     resource_units_t inventory;  // Inital number of units (1, 2, or 3).
     resource_units_t state;      // Number of units available.
-    list_t waitlist;             /* Linked list of process indices and 
+    list_t wait_list;             /* Linked list of process indices and 
                                      how many units they requested. */
 }
 rcb_t;
+
+/* An entry in (1) the held resource list of a process or (2) the wait list of
+   a resource. */
+typedef struct
+{
+    uint8_t id;
+    uint8_t cnt;
+} 
+resource_entry_t;
 
 extern list_t ready_lists[NUM_PRIORITY_LEVELS];
 extern pcb_t pcb_table[NUM_PCB];

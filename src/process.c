@@ -19,12 +19,16 @@ void create (priority_t level)
     // Adding new process to children of current process
     pcb_t curr_pcb = pcb_table[current_process];
     list_elem_t *child_elem = (list_elem_t *) malloc (sizeof (list_elem_t));
-    child_elem->id = id;
+    uint8_t *tmp1 = (uint8_t *) malloc (sizeof (uint8_t));
+    *tmp1 = id;
+    child_elem->data = (void *) tmp1;
     list_push_back (&curr_pcb.children, child_elem);
 
     // Adding new process to appropriate ready list
     list_elem_t *ready_elem = (list_elem_t *) malloc (sizeof (list_elem_t));
-    ready_elem->id = id;
+    uint8_t *tmp2 = (uint8_t *) malloc (sizeof (uint8_t));
+    *tmp2 = id;
+    ready_elem->data = (void *) tmp2;
     list_push_back (&ready_lists[level], ready_elem);
     id_to_elem[id] = ready_elem;
 
@@ -45,7 +49,8 @@ uint8_t destroy (uint8_t p_id)
     for (list_elem_t *e = list_begin (&proc.children); 
             e != list_tail (&proc.children); e = list_next (e))
     {
-        destroyed += destroy (e->id);
+        uint8_t c_id = *(uint8_t *) e->data; 
+        destroyed += destroy (c_id);
     }
 
     // Removing destroyed process from parent's list of children

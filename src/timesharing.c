@@ -13,7 +13,7 @@ void scheduler (void)
             break;
     }
 
-    p_id = list_begin (&ready_lists[i])->id;
+    p_id = *(uint8_t *) list_begin (&ready_lists[i])->data;
   
     /* If highest priority process is not the current process, perform 
        context switch */

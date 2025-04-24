@@ -11,15 +11,18 @@ void init (void)
         list_init (&ready_lists[i]);
     }
 
-    // Initializing the init process 
+    /* Initializing the init process. Note that its resources list is left
+       uninitialized, thus accessing it has undefined behavior. */
     pcb_table[0].priority = PRIORITY_LOW;
     pcb_table[0].state = PROCESS_READY;
     pcb_table[0].parent = INVALID_INDEX;
     list_init (&pcb_table[0].children);
-    // Init process resources list is uninitialized, undefined behavior
 
+    // Pushing init process to low priority ready list  
     list_elem_t *init_elem = (list_elem_t *) malloc (sizeof (list_elem_t));
-    init_elem->id = 0;
+    uint8_t *tmp = (uint8_t *) malloc (sizeof (uint8_t));
+    *tmp = 0;
+    init_elem->data = (void *) tmp;
     list_push_back (&ready_lists[0], init_elem);
     current_process = 0;
 
@@ -38,7 +41,7 @@ void init (void)
     {
         rcb_table[k].inventory = (k >= 1) ? k : 1;
         rcb_table[k].state = rcb_table[k].inventory;
-        list_init (&rcb_table[k].waitlist);
+        list_init (&rcb_table[k].wait_list);
     }
 }
 

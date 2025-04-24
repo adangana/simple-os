@@ -115,7 +115,8 @@ list_elem_t *list_remove_id (list_t *list, uint8_t id)
     list_elem_t *e;
     for (e = list_begin (list); e != list_tail (list); e = list_next (e))
     {
-        if (e->id == id)
+        uint8_t e_id = *(uint8_t *) e->data;
+        if (e_id == id)
             break;
     }
 

@@ -9,7 +9,8 @@
 // Linked list element
 typedef struct list_elem 
 {
-    uint8_t id;
+    void *data;
+    // uint8_t id;
     struct list_elem *prev;
     struct list_elem *next;
 }

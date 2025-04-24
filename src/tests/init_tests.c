@@ -8,7 +8,7 @@ void test_initialization (void)
     init ();
 
     assert (list_size (&ready_lists[0]) == 1);
-    assert (list_begin (&ready_lists[0])->id == 0);
+    assert (*(uint8_t *) list_begin (&ready_lists[0])->data == 0);
 
     for (int i = 1; i < NUM_PRIORITY_LEVELS; i++)
     {
@@ -38,7 +38,7 @@ void test_initialization (void)
             assert (rcb_table[k].inventory == k);
         
         assert (rcb_table[k].state == rcb_table[k].inventory);
-        assert (list_empty (&rcb_table[k].waitlist));
+        assert (list_empty (&rcb_table[k].wait_list));
     }
 
     free (list_begin (&ready_lists[0]));

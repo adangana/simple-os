@@ -67,9 +67,9 @@ void test_push_back (void)
     list_t lst;
     list_init (&lst);
 
-    list_elem_t elem1; elem1.id = 1;
-    list_elem_t elem2; elem2.id = 2;
-    list_elem_t elem3; elem3.id = 3;
+    list_elem_t elem1;
+    list_elem_t elem2;
+    list_elem_t elem3;
 
     list_push_back (&lst, &elem1);
     assert (list_size (&lst) == 1);
