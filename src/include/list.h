@@ -10,7 +10,6 @@
 typedef struct list_elem 
 {
     void *data;
-    // uint8_t id;
     struct list_elem *prev;
     struct list_elem *next;
 }

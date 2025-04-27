@@ -4,6 +4,19 @@
 #include "../include/process.h"
 #include "../include/init.h"
 
+void test_scheduler (void)
+{
+    init ();
+
+    create (PRIORITY_MEDIUM);
+    assert (current_process == 1);
+
+    create (PRIORITY_HIGH);
+    assert (current_process == 2);
+
+    printf ("test_scheduler passed\n");
+}
+
 void test_timeout_easy (void)
 {
     init ();
@@ -56,6 +69,7 @@ void test_timeout_medium (void)
 
 int main (void)
 {
+    test_scheduler ();
     test_timeout_easy ();
     test_timeout_medium ();
 

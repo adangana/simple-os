@@ -6,6 +6,6 @@
 
 void create (priority_t level);
 
-uint8_t destroy (uint8_t p_id);
+uint8_t destroy (uint8_t p_id, uint8_t recurring);
 
 #endif

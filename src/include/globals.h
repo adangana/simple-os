@@ -7,6 +7,7 @@
 #define NUM_PCB 16
 #define NUM_RCB 4
 #define NUM_PRIORITY_LEVELS 3
+#define INVALID_INDEX 255
 
 /* Process state. */
 typedef enum
