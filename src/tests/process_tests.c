@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <assert.h>
 #include "../include/process.h"
-#include "../include/init.h"
+#include "../include/manager.h"
 #include "../include/timesharing.h"
 
 void test_create_process_easy (void)

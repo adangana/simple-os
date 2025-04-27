@@ -1,5 +1,6 @@
 #include <stdlib.h>
-#include "include/init.h"
+#include "include/manager.h"
+#include "include/process.h"
 
 #include <stdio.h>
 
@@ -43,5 +44,29 @@ void init (void)
         rcb_table[k].state = rcb_table[k].inventory;
         list_init (&rcb_table[k].wait_list);
     }
+
+    printf ("%d ", current_process);
 }
 
+void cleanup (void)
+{
+    // Free PCB entries
+    for (int i = 0; i < NUM_PCB; i++)
+    {
+        free_list (&pcb_table[i].children);
+        if (i > 0)
+            free_list (&pcb_table[i].resources);
+    }
+
+    // Free RCB entries
+    for (int j = 0; j < NUM_RCB; j++)
+    {
+        free_list (&rcb_table[j].wait_list);
+    }
+
+    // Free ready lists
+    for (int k = 0; k < NUM_PRIORITY_LEVELS; k++)
+    {
+        free_list (&ready_lists[k]);
+    }
+}

@@ -16,7 +16,7 @@ void create (priority_t level)
     // Maximum amount of processes reached 
     if (id >= NUM_PCB)
     {
-        printf ("error\n");
+        printf ("-1 ");
         return;
     }
 
@@ -44,8 +44,6 @@ void create (priority_t level)
        wait list element */
     id_to_elem[id] = ready_elem;
 
-    printf ("process %d created\n", id);
-
     // This will context switch if highest priority process changes 
     scheduler ();
 }
@@ -55,9 +53,9 @@ void create (priority_t level)
 uint8_t destroy (uint8_t p_id, uint8_t recurring)
 {
     // Destroying a nonexistent process 
-    if (p_id < 0 || p_id >= NUM_PCB)
+    if (p_id >= NUM_PCB)
     {
-        printf ("error\n");
+        printf ("-1 ");
         return 0;
     }
 
@@ -67,26 +65,38 @@ uint8_t destroy (uint8_t p_id, uint8_t recurring)
        first call, not recursive calls) */
     if (!recurring && current_process != proc->parent)
     {
-        printf ("error\n");
+        printf ("-1 ");
         return 0;
     }
 
     uint8_t destroyed = 0;
 
-    // Destroying all child processes
+    // Collecting child process IDs
+    uint8_t child_ids[NUM_PCB];
+    uint8_t child_count = 0;
+
     for (list_elem_t *e = list_begin (&proc->children); 
             e != list_tail (&proc->children); e = list_next (e))
     {
-        uint8_t c_id = *(uint8_t *) e->data; 
-        destroyed += destroy (c_id, 1);
+        child_ids[child_count++] = *(uint8_t *) e->data;
+    }
+
+    // Destroying all child processes
+    for (int i = 0; i < child_count; i++)
+    {
+        destroyed += destroy (child_ids[i], 1);
     }
 
     // Removing destroyed process from parent's list of children
     pcb_t *parent_proc = &pcb_table[proc->parent];
-    free (list_remove_id (&parent_proc->children, p_id));
+    list_elem_t *tmp = list_remove_id (&parent_proc->children, p_id);
+    free (tmp->data);
+    free (tmp);
 
     // Removing destroyed process from ready list or resource waiting list
-    free (list_remove_elem (id_to_elem[p_id]));
+    tmp = list_remove_elem (id_to_elem[p_id]);
+    free (tmp->data);
+    free(tmp);
     
     // Release all of the destroyed process' resources
     for (list_elem_t *r = list_begin (&proc->resources); 
@@ -94,8 +104,7 @@ uint8_t destroy (uint8_t p_id, uint8_t recurring)
     {
         list_elem_t *next = list_next (r);
         resource_entry_t *r_entry = (resource_entry_t *) r->data;
-        release (r_entry->id, r_entry->cnt);
-        free (r_entry);
+        release (r_entry->id, r_entry->cnt, p_id, 1);
         r = next;
     }
 
@@ -106,7 +115,7 @@ uint8_t destroy (uint8_t p_id, uint8_t recurring)
     
     destroyed += 1;
 
-    printf ("%d processes destroyed\n", destroyed);
+    // printf ("%d processes destroyed\n", destroyed);
 
     /* Context switch if deleted process releases resource and unblocks a 
        higher level process. */

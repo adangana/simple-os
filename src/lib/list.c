@@ -1,4 +1,5 @@
 #include <assert.h>
+#include <stdlib.h>
 #include "../include/list.h"
 
 /* Returns True if the element is the head of the list. */
@@ -148,4 +149,19 @@ bool list_empty (list_t *list)
 {
     assert (list != NULL);
     return list_begin (list) == list_tail (list);
+}
+
+void free_list (list_t *list)
+{
+    assert (list != NULL);
+
+    list_elem_t *e = list_begin (list);
+    while (e != list_tail (list))
+    {
+        list_elem_t *next = list_next (e);
+        list_remove_elem (e);
+        free (e->data);
+        free (e);
+        e = next;
+    }
 }

@@ -53,6 +53,9 @@ list_elem_t *list_pop_front (list_t *list);
 size_t list_size (list_t *list);
 bool list_empty (list_t *list);
 
+// Freeing list
+void free_list (list_t *list);
+
 // Functions for testing
 bool is_head (list_elem_t *elem);
 bool is_start (list_elem_t *elem);

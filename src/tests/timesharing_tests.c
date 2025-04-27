@@ -2,7 +2,7 @@
 #include <assert.h>
 #include "../include/timesharing.h"
 #include "../include/process.h"
-#include "../include/init.h"
+#include "../include/manager.h"
 
 void test_scheduler (void)
 {

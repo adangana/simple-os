@@ -2,7 +2,7 @@
 #include <assert.h>
 #include "../include/resource.h"
 #include "../include/process.h"
-#include "../include/init.h"
+#include "../include/manager.h"
 #include "../include/timesharing.h"
 
 void test_request_easy (void)
@@ -83,9 +83,9 @@ void test_release_easy (void)
 
     printf ("expected output: error\n");
     printf ("actual output: ");
-    release (0, 2);
+    release (0, 2, current_process, 0);
 
-    release (0, 1);
+    release (0, 1, current_process, 0);
 
     assert (pcb_table[2].state == PROCESS_READY);
     assert (list_empty (&rcb_table[0].wait_list));
@@ -115,7 +115,7 @@ void test_release_medium (void)
     assert (pcb_table[2].state == PROCESS_BLOCKED);
     assert (pcb_table[3].state == PROCESS_BLOCKED);
 
-    release (2, 2);
+    release (2, 2, current_process, 0);
 
     assert (list_empty (&rcb_table[2].wait_list));
     assert (pcb_table[1].state == PROCESS_READY);

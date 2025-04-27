@@ -3,27 +3,29 @@
 #include "include/timesharing.h"
 
 static list_elem_t *get_ready_list_entry (uint8_t p_id);
-static list_elem_t *get_resource_list_entry (uint8_t r_id);
+static list_elem_t *get_resource_list_entry (uint8_t p_id, uint8_t r_id);
 
 void request (uint8_t r_id, uint8_t requested)
 {
     // Requesting a nonexistent resource
-    if (r_id < 0 || r_id >= NUM_RCB)
+    if (r_id >= NUM_RCB)
     {
-        printf ("error\n");
+        printf ("requesting a nonexistent resource\n");
+        printf ("-1 ");
         return;
     }
 
     // Init process 0 requests a resource
     if (current_process == 0)
     {
-        printf ("error\n");
+        printf ("process 0 requests a resource\n");
+        printf ("-1 ");
         return;
     }
 
     pcb_t *pcb = &pcb_table[current_process]; 
     rcb_t *rcb = &rcb_table[r_id];
-    list_elem_t *r = get_resource_list_entry (r_id);
+    list_elem_t *r = get_resource_list_entry (current_process, r_id);
     resource_entry_t *r_entry = NULL;
     
     uint8_t held;
@@ -40,7 +42,8 @@ void request (uint8_t r_id, uint8_t requested)
     // Requesting to hold more units of resource than available
     if (held + requested > rcb->inventory)
     {
-        printf ("error\n");
+        printf ("requesting to hold more units of resource than available\n");
+        printf ("-1 ");
         return;
     }
 
@@ -66,7 +69,8 @@ void request (uint8_t r_id, uint8_t requested)
             list_push_back (&pcb->resources, new_r_elem);
         }
 
-        printf ("resource %d allocated\n", r_id);
+        // printf ("resource %d allocated\n", r_id);
+        printf ("%d ", current_process);
     }
     else
     {
@@ -86,30 +90,46 @@ void request (uint8_t r_id, uint8_t requested)
 
         list_push_back (&rcb->wait_list, elem);
 
-        printf ("process %d blocked\n", current_process);
+        // printf ("process %d blocked\n", current_process);
 
         scheduler ();
     }
 }
 
-void release (uint8_t r_id, uint8_t released)
+void release (uint8_t r_id, uint8_t released, uint8_t p_id, uint8_t recurring)
 {
     rcb_t *rcb = &rcb_table[r_id];
 
-    list_elem_t *r_elem = get_resource_list_entry (r_id);
+    list_elem_t *r_elem = get_resource_list_entry (p_id, r_id);
     
     // Releasing a resource that the process does not hold
     if (r_elem == NULL)
     {
-        printf ("error\n");
+        printf ("-1 ");
         return;
     }
 
-    // Remove r from resource list of process i
-    list_remove_elem (r_elem);
     resource_entry_t *r_entry = (resource_entry_t *) r_elem->data;
-    free (r_elem);
-    free (r_entry);
+
+    // Releasing more units of the resource than the process holds
+    if (released > r_entry->cnt)
+    {
+        printf ("-1 ");
+        return;
+    }
+
+    // If releasing all held units, remove resource from process resources 
+    if (released == r_entry->cnt)
+    {
+        list_remove_elem (r_elem);
+        free (r_elem);
+        free (r_entry);
+    }
+    // Otherwise, update just existing resources entry
+    else
+    {
+        r_entry->cnt -= released;
+    }
 
     rcb->state += released;
 
@@ -125,24 +145,48 @@ void release (uint8_t r_id, uint8_t released)
 
             if (rcb->state >= r->cnt)
             {
-                // Unblock process and move to ready list
+                rcb->state -= r->cnt;
+
+                // Insert resource into new process' resources list
+                list_elem_t *r_elem = (list_elem_t *) malloc 
+                    (sizeof (list_elem_t));
+                resource_entry_t *r_entry = (resource_entry_t *) malloc 
+                    (sizeof (resource_entry_t));
+                r_entry->id = r_id;
+                r_entry->cnt = r->cnt;
+                r_elem->data = (void *) r_entry;
+                list_push_back (&pcb->resources, r_elem);
+
+                // Unblock process and remove from resource wait list
                 pcb->state = PROCESS_READY;
-                list_t *rl = &ready_lists[pcb->priority];
                 list_remove_elem (e);
-                free (e->data);
+
                 uint8_t *tmp = (uint8_t *) malloc (sizeof (uint8_t));
+                *tmp = r->id;
+                free (r);
                 e->data = (void *) tmp;
+
+                // Move process to ready list
+                list_t *rl = &ready_lists[pcb->priority];
                 list_push_back (rl, e);
             }
 
             e = next;
         }
+
+        if (!recurring)
+            scheduler ();
+    }
+    else
+    {
+        if (!recurring)
+            printf ("%d ", current_process);
     }
 }
 
 static list_elem_t *get_ready_list_entry (uint8_t p_id)
 {
-    list_t *rl = &ready_lists[pcb_table[current_process].priority];
+    list_t *rl = &ready_lists[pcb_table[p_id].priority];
 
     for (list_elem_t *e = list_begin (rl); e != list_tail (rl); 
             e = list_next (e))
@@ -155,9 +199,9 @@ static list_elem_t *get_ready_list_entry (uint8_t p_id)
     return NULL;
 }
 
-static list_elem_t *get_resource_list_entry (uint8_t r_id)
+static list_elem_t *get_resource_list_entry (uint8_t p_id, uint8_t r_id)
 {
-    list_t *rl = &pcb_table[current_process].resources;
+    list_t *rl = &pcb_table[p_id].resources;
 
     for (list_elem_t *e = list_begin (rl); e != list_tail (rl); 
             e = list_next (e))
