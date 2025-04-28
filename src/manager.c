@@ -51,7 +51,7 @@ void init (void)
 void cleanup (void)
 {
     // Free PCB entries
-    for (int i = 0; i < NUM_PCB; i++)
+    for (int i = 1; i < NUM_PCB; i++)
     {
         free_list (&pcb_table[i].children);
         if (i > 0)

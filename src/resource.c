@@ -10,7 +10,6 @@ void request (uint8_t r_id, uint8_t requested)
     // Requesting a nonexistent resource
     if (r_id >= NUM_RCB)
     {
-        printf ("requesting a nonexistent resource\n");
         printf ("-1 ");
         return;
     }
@@ -18,7 +17,6 @@ void request (uint8_t r_id, uint8_t requested)
     // Init process 0 requests a resource
     if (current_process == 0)
     {
-        printf ("process 0 requests a resource\n");
         printf ("-1 ");
         return;
     }
@@ -42,7 +40,6 @@ void request (uint8_t r_id, uint8_t requested)
     // Requesting to hold more units of resource than available
     if (held + requested > rcb->inventory)
     {
-        printf ("requesting to hold more units of resource than available\n");
         printf ("-1 ");
         return;
     }
@@ -69,7 +66,6 @@ void request (uint8_t r_id, uint8_t requested)
             list_push_back (&pcb->resources, new_r_elem);
         }
 
-        // printf ("resource %d allocated\n", r_id);
         printf ("%d ", current_process);
     }
     else
@@ -89,8 +85,6 @@ void request (uint8_t r_id, uint8_t requested)
         elem->data = (void *) r_entry;
 
         list_push_back (&rcb->wait_list, elem);
-
-        // printf ("process %d blocked\n", current_process);
 
         scheduler ();
     }

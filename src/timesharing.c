@@ -20,7 +20,6 @@ void scheduler (void)
     if (p_id != current_process)
         current_process = p_id;
 
-    // printf ("process %d is running\n", current_process);
     printf ("%d ", current_process);
 }
 

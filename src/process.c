@@ -18,7 +18,7 @@ void create (priority_t level)
     {
         printf ("-1 ");
         return;
-    }
+    } 
 
     pcb_t *pcb = &pcb_table[id];
     pcb->priority = level;
@@ -114,8 +114,6 @@ uint8_t destroy (uint8_t p_id, uint8_t recurring)
     proc->parent = INVALID_INDEX;
     
     destroyed += 1;
-
-    // printf ("%d processes destroyed\n", destroyed);
 
     /* Context switch if deleted process releases resource and unblocks a 
        higher level process. */
