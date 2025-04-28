@@ -51,22 +51,30 @@ void init (void)
 void cleanup (void)
 {
     // Free PCB entries
+    free_list (&pcb_table[0].children);
     for (int i = 1; i < NUM_PCB; i++)
     {
-        free_list (&pcb_table[i].children);
-        if (i > 0)
+        list_t *children = &pcb_table[i].children;
+        list_t *resources = &pcb_table[i].resources;
+        if (!list_empty (children))
+            free_list (&pcb_table[i].children);
+        if (i > 0 && !list_empty (resources))
             free_list (&pcb_table[i].resources);
     }
 
     // Free RCB entries
     for (int j = 0; j < NUM_RCB; j++)
     {
-        free_list (&rcb_table[j].wait_list);
+        list_t *wait_list = &rcb_table[j].wait_list;
+        if (!list_empty (wait_list))
+            free_list (&rcb_table[j].wait_list);
     }
 
     // Free ready lists
     for (int k = 0; k < NUM_PRIORITY_LEVELS; k++)
     {
-        free_list (&ready_lists[k]);
+        list_t *ready_list = &ready_lists[k];
+        if (!list_empty (ready_list))
+            free_list (&ready_lists[k]);
     }
 }

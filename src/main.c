@@ -29,7 +29,7 @@ int main (void)
 
         if (fgets (input, INPUT_SIZE, stdin) == NULL)
         {
-            printf ("-1");
+            printf ("-1 ");
         }
 
         input[strcspn (input, "\n")] = 0;  // Remove the newline
@@ -38,8 +38,6 @@ int main (void)
         {
             if (initialized)
                 cleanup ();
-
-            printf ("\n");
             init ();
             initialized = 1;
         }
@@ -64,7 +62,7 @@ int main (void)
         else if (strncmp (input, "rl ", 3) == 0)
         {
             int resource, quantity;
-            if (sscanf (input + 3, "%d %d", &resource, &quantity) == 0)
+            if (sscanf (input + 3, "%d %d", &resource, &quantity) == 2)
                 release ((uint8_t) resource, (uint8_t) quantity, 
                         current_process, 0);
             else
@@ -76,7 +74,8 @@ int main (void)
         }
         else if (strncmp (input, "quit", 4) == 0)
         {
-            cleanup ();
+            if (initialized)
+                cleanup ();
             break;
         }
         else 
