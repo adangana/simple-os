@@ -8,3 +8,4 @@ list_elem_t *id_to_elem[NUM_PCB];
 
 int phys_mem[PHYSICAL_MEMORY_SIZE];
 int disk[NUM_BLOCKS][BLOCK_SIZE];
+list_t free_frames;

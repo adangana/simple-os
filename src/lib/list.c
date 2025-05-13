@@ -1,167 +1,143 @@
+#include "../include/list.h"
 #include <assert.h>
 #include <stdlib.h>
-#include "../include/list.h"
 
 /* Returns True if the element is the head of the list. */
-bool is_head (list_elem_t *elem)
-{
-    return elem != NULL && elem->prev == NULL && elem->next != NULL;
+bool is_head(list_elem_t *elem) {
+  return elem != NULL && elem->prev == NULL && elem->next != NULL;
 }
 
 /* Returns True if the element is the first element of the list. */
-bool is_start (list_elem_t *elem)
-{
-    return elem != NULL && is_head (elem->prev) && elem->next != NULL;
+bool is_start(list_elem_t *elem) {
+  return elem != NULL && is_head(elem->prev) && elem->next != NULL;
 }
 
 /* Returns True if the element is an interior element of the list (not head or
    tail). */
-bool is_interior (list_elem_t *elem)
-{
-    return elem != NULL && elem->prev != NULL && elem->next != NULL;
+bool is_interior(list_elem_t *elem) {
+  return elem != NULL && elem->prev != NULL && elem->next != NULL;
 }
 
 /* Returns True if the element is the tail of the list. */
-bool is_tail (list_elem_t *elem)
-{
-    return elem != NULL && elem->prev != NULL && elem->next == NULL;
+bool is_tail(list_elem_t *elem) {
+  return elem != NULL && elem->prev != NULL && elem->next == NULL;
 }
 
 /* Returns True if the element is the last element in the list. */
-bool is_end (list_elem_t *elem)
-{
-    return elem != NULL && elem->prev != NULL && is_tail (elem->next);
+bool is_end(list_elem_t *elem) {
+  return elem != NULL && elem->prev != NULL && is_tail(elem->next);
 }
 
-void list_init (list_t *list)
-{
-    assert (list != NULL);
-    list->head.prev = NULL;
-    list->head.next = &list->tail;
-    list->tail.prev = &list->head;
-    list->tail.next = NULL;
+void list_init(list_t *list) {
+  assert(list != NULL);
+  list->head.prev = NULL;
+  list->head.next = &list->tail;
+  list->tail.prev = &list->head;
+  list->tail.next = NULL;
 }
 
-
-list_elem_t *list_next (list_elem_t *elem)
-{
-    assert (is_head (elem) || is_interior (elem));
-    return elem->next;
+list_elem_t *list_next(list_elem_t *elem) {
+  assert(is_head(elem) || is_interior(elem));
+  return elem->next;
 }
 
-list_elem_t *list_prev (list_elem_t *elem)
-{
-    assert (is_tail (elem) || is_interior (elem));
-    return elem->prev;
+list_elem_t *list_prev(list_elem_t *elem) {
+  assert(is_tail(elem) || is_interior(elem));
+  return elem->prev;
 }
 
-list_elem_t *list_head (list_t *list)
-{
-    assert (list != NULL);
-    return &list->head;
+list_elem_t *list_head(list_t *list) {
+  assert(list != NULL);
+  return &list->head;
 }
 
-list_elem_t *list_begin (list_t *list)
-{
-    assert (list != NULL);
-    return list->head.next;
+list_elem_t *list_begin(list_t *list) {
+  assert(list != NULL);
+  return list->head.next;
 }
 
-list_elem_t *list_tail (list_t *list)
-{
-    assert (list != NULL);
-    return &list->tail;
+list_elem_t *list_tail(list_t *list) {
+  assert(list != NULL);
+  return &list->tail;
 }
 
-list_elem_t *list_end (list_t *list)
-{
-    assert (list != NULL);
-    return list->tail.prev;
+list_elem_t *list_end(list_t *list) {
+  assert(list != NULL);
+  return list->tail.prev;
 }
 
 /* Inserts elem before after in the linked list. */
-void list_insert (list_elem_t *after, list_elem_t *elem)
-{
-    assert (after != NULL);
-    assert (elem != NULL);
+void list_insert(list_elem_t *after, list_elem_t *elem) {
+  assert(after != NULL);
+  assert(elem != NULL);
 
-    elem->prev = after->prev;
-    elem->next = after;
-    after->prev->next = elem;
-    after->prev = elem;
+  elem->prev = after->prev;
+  elem->next = after;
+  after->prev->next = elem;
+  after->prev = elem;
 }
 
-void list_push_front (list_t *list, list_elem_t *elem)
-{
-    list_insert (list_begin (list), elem);
+void list_push_front(list_t *list, list_elem_t *elem) {
+  list_insert(list_begin(list), elem);
 }
 
-void list_push_back (list_t *list, list_elem_t *elem)
-{
-    list_insert (list_tail (list), elem);
+void list_push_back(list_t *list, list_elem_t *elem) {
+  list_insert(list_tail(list), elem);
 }
 
 /* Removes elem from its list and returns it. */
-list_elem_t *list_remove_elem (list_elem_t* elem)
-{
-    assert (is_interior (elem)); 
-    elem->prev->next = elem->next;
-    elem->next->prev = elem->prev;
-    return elem;
+list_elem_t *list_remove_elem(list_elem_t *elem) {
+  assert(is_interior(elem));
+  elem->prev->next = elem->next;
+  elem->next->prev = elem->prev;
+  return elem;
 }
 
-list_elem_t *list_remove_id (list_t *list, uint8_t id)
-{
-    assert (list != NULL);
-    list_elem_t *e;
-    for (e = list_begin (list); e != list_tail (list); e = list_next (e))
-    {
-        uint8_t e_id = *(uint8_t *) e->data;
-        if (e_id == id)
-            break;
-    }
+list_elem_t *list_remove_id(list_t *list, int id) {
+  assert(list != NULL);
+  list_elem_t *e;
+  for (e = list_begin(list); e != list_tail(list); e = list_next(e)) {
+    int e_id = *(int *)e->data;
+    if (e_id == id)
+      break;
+  }
 
-    return list_remove_elem (e);
+  return list_remove_elem(e);
 }
 
-list_elem_t *list_pop_front (list_t *list)
-{
-    assert (!list_empty (list));
-    return list_remove_elem (list_begin (list));
+list_elem_t *list_pop_front(list_t *list) {
+  assert(!list_empty(list));
+  return list_remove_elem(list_begin(list));
 }
 
 /* Returns the size of the list. */
-size_t list_size (list_t *list)
-{
-    assert (list != NULL);
+size_t list_size(list_t *list) {
+  assert(list != NULL);
 
-    list_elem_t *e;
-    size_t cnt = 0;
+  list_elem_t *e;
+  size_t cnt = 0;
 
-    for (e = list_begin (list); e != list_tail (list); e = list_next (e))
-        cnt++;
+  for (e = list_begin(list); e != list_tail(list); e = list_next(e))
+    cnt++;
 
-    return cnt;
+  return cnt;
 }
 
 /* Returns True if the list is empty, False otherwise. */
-bool list_empty (list_t *list)
-{
-    assert (list != NULL);
-    return list_begin (list) == list_tail (list);
+bool list_empty(list_t *list) {
+  assert(list != NULL);
+  return list_begin(list) == list_tail(list);
 }
 
-void free_list (list_t *list)
-{
-    assert (list != NULL);
+void free_list(list_t *list) {
+  assert(list != NULL);
 
-    list_elem_t *e = list_begin (list);
-    while (e != list_tail (list))
-    {
-        list_elem_t *next = list_next (e);
-        list_remove_elem (e);
-        free (e->data);
-        free (e);
-        e = next;
-    }
+  list_elem_t *e = list_begin(list);
+  while (e != list_tail(list)) {
+    list_elem_t *next = list_next(e);
+    list_remove_elem(e);
+    free(e->data);
+    free(e);
+    e = next;
+  }
 }

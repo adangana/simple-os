@@ -64,5 +64,6 @@ extern list_elem_t *id_to_elem[NUM_PCB];
 
 extern int phys_mem[PHYSICAL_MEMORY_SIZE];
 extern int disk[NUM_BLOCKS][BLOCK_SIZE];
+extern list_t free_frames;
 
 #endif

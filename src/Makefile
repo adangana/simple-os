@@ -23,7 +23,7 @@ tests: $(TEST_BINS)
 # Building individual test executables
 bin/%: tests/%.c $(filter-out ./main.o, $(OBJ))
 	@mkdir -p $(BIN_TEST_DIR) 
-	$(CC) $(CFLAGS)	-o $(BIN_TEST_DIR)/$@ $< $(filter-out ./main.o, $(OBJ))
+	$(CC) $(CFLAGS)	-o $(BIN_TEST_DIR)/$(notdir $@) $< $(filter-out ./main.o, $(OBJ))
 
 %.o: %.c
 	@ if [ $< != "main.c" ]; then \
