@@ -87,8 +87,8 @@ void test_vm_initialization_2(void) {
 
   assert(phys_mem[phys_mem[17] * BLOCK_SIZE + 0] == 10);
   assert(phys_mem[phys_mem[17] * BLOCK_SIZE + 1] == -20);
-  assert(phys_mem[phys_mem[19] * BLOCK_SIZE + 0] == 13);
-  assert(phys_mem[phys_mem[19] * BLOCK_SIZE + 1] == -25);
+  assert(disk[7][0] == 13);
+  assert(disk[7][1] == -25);
 
   printf("test_vm_initialization_2 passed\n");
 

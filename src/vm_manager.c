@@ -73,7 +73,6 @@ void vm_init(FILE *fp) {
       free(removed->data);
       free(removed);
     }
-
     initialize_segment(segment, length, frame);
   }
 
@@ -87,14 +86,21 @@ void vm_init(FILE *fp) {
     cur = parse_input(cur, &page, fp);
     cur = parse_input(cur, &frame, fp);
 
-    // Updating free frame list
-    if (frame > 0) {
-      list_elem_t *removed = list_remove_id(&free_frames, frame);
-      free(removed->data);
-      free(removed);
-    }
+    int segment_frame = phys_mem[2 * segment + 1];
 
-    initialize_page(segment, page, frame);
+    /* If segment PT is not in physical memory, initialize its pages in the
+     * specified paging disk block */
+    if (segment_frame < 0) {
+      disk[-segment_frame][page] = frame;
+    } else {
+      // Updating free frame list
+      if (frame > 0) {
+        list_elem_t *removed = list_remove_id(&free_frames, frame);
+        free(removed->data);
+        free(removed);
+      }
+      initialize_page(segment, page, frame);
+    }
   }
 }
 
