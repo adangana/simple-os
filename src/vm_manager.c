@@ -1,6 +1,7 @@
 #include "include/vm_manager.h"
 #include "include/globals.h"
 #include "include/list.h"
+#include <stdbool.h>
 #include <stdlib.h>
 
 /* Initializes segment table entry for a given segment */
@@ -15,13 +16,28 @@ static void initialize_page(int segment, int page, int frame) {
 }
 
 /* Reads integer from input into location specified by dest */
-static int parse_input(int cur, int *dest) {
+static int parse_input(int cur, int *dest, FILE *fp) {
+  bool negative = 0;
+
+  // Skip whitespace in between numbers
   while (cur == ' ')
-    cur = getchar();
+    cur = fgetc(fp);
+
+  // Account for negative numbers
+  if (cur == '-') {
+    negative = 1;
+    cur = fgetc(fp);
+  }
+
+  // Parse number
   while (cur >= '0' && cur <= '9') {
     *dest = *dest * 10 + (cur - '0');
-    cur = getchar();
+    cur = fgetc(fp);
   }
+
+  if (negative)
+    *dest = -(*dest);
+
   return cur;
 }
 
@@ -30,7 +46,7 @@ void read_block(int b, int m) {
     phys_mem[m * BLOCK_SIZE + i] = disk[b][i];
 }
 
-void vm_init(void) {
+void vm_init(FILE *fp) {
   // Initializing free frame list
   list_init(&free_frames);
   for (int i = 2; i < NUM_BLOCKS; i++) {
@@ -42,38 +58,44 @@ void vm_init(void) {
     list_push_back(&free_frames, tmp_elem);
   }
 
-  int cur = getchar();
+  int cur = fgetc(fp);
 
   while (cur != '\n' && cur != EOF) {
     int segment = 0, length = 0, frame = 0;
 
-    cur = parse_input(cur, &segment);
-    cur = parse_input(cur, &length);
-    cur = parse_input(cur, &frame);
+    cur = parse_input(cur, &segment, fp);
+    cur = parse_input(cur, &length, fp);
+    cur = parse_input(cur, &frame, fp);
 
     // Updating free frame list
-    list_elem_t *removed = list_remove_id(&free_frames, frame);
-    free(removed->data);
-    free(removed);
+    if (frame > 0) {
+      list_elem_t *removed = list_remove_id(&free_frames, frame);
+      free(removed->data);
+      free(removed);
+    }
 
     initialize_segment(segment, length, frame);
   }
 
   if (cur == '\n')
-    cur = getchar();
+    cur = fgetc(fp);
 
   while (cur != '\n' && cur != EOF) {
-    int segment, page, frame;
+    int segment = 0, page = 0, frame = 0;
 
-    cur = parse_input(cur, &segment);
-    cur = parse_input(cur, &page);
-    cur = parse_input(cur, &frame);
+    cur = parse_input(cur, &segment, fp);
+    cur = parse_input(cur, &page, fp);
+    cur = parse_input(cur, &frame, fp);
 
     // Updating free frame list
-    list_elem_t *removed = list_remove_id(&free_frames, frame);
-    free(removed->data);
-    free(removed);
+    if (frame > 0) {
+      list_elem_t *removed = list_remove_id(&free_frames, frame);
+      free(removed->data);
+      free(removed);
+    }
 
     initialize_page(segment, page, frame);
   }
 }
+
+void vm_cleanup(void) { free_list(&free_frames); }
