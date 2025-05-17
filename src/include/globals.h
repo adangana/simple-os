@@ -35,7 +35,7 @@ typedef enum { ZERO_UNITS, ONE_UNITS, TWO_UNITS, THREE_UNITS } resource_units_t;
 typedef struct {
   priority_t priority;   // Process priority level.
   process_state_t state; // Process state.
-  uint8_t parent;        // PCB table index of parent process.
+  int parent;            // PCB table index of parent process.
   list_t children;       // Linked list of indices of child processes.
   list_t resources;      /* Linked list of resources that process is
                             currently holding. */
@@ -52,14 +52,14 @@ typedef struct {
 /* An entry in (1) the held resource list of a process or (2) the wait list of
    a resource. */
 typedef struct {
-  uint8_t id;
-  uint8_t cnt;
+  int id;
+  int cnt;
 } resource_entry_t;
 
 extern list_t ready_lists[NUM_PRIORITY_LEVELS];
 extern pcb_t pcb_table[NUM_PCB];
 extern rcb_t rcb_table[NUM_RCB];
-extern uint8_t current_process;
+extern int current_process;
 extern list_elem_t *id_to_elem[NUM_PCB];
 
 extern int phys_mem[PHYSICAL_MEMORY_SIZE];

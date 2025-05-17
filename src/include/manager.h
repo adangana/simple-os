@@ -1,10 +1,10 @@
-#ifndef MANAGER_H 
-#define MANAGER_H 
+#ifndef MANAGER_H
+#define MANAGER_H
 
 #include "globals.h"
 
-void init (void);
+void init(void);
 
-void cleanup (void);
+void cleanup(void);
 
 #endif

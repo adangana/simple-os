@@ -1,7 +1,7 @@
 #include "include/vm_manager.h"
 #include "include/globals.h"
+#include "include/input_parser.h"
 #include "include/list.h"
-#include <stdbool.h>
 #include <stdlib.h>
 
 /* Initializes segment table entry for a given segment */
@@ -15,35 +15,17 @@ static void initialize_page(int segment, int page, int frame) {
   phys_mem[phys_mem[2 * segment + 1] * BLOCK_SIZE + page] = frame;
 }
 
-/* Reads integer from input into location specified by dest */
-static int parse_input(int cur, int *dest, FILE *fp) {
-  bool negative = 0;
-
-  // Skip whitespace in between numbers
-  while (cur == ' ')
-    cur = fgetc(fp);
-
-  // Account for negative numbers
-  if (cur == '-') {
-    negative = 1;
-    cur = fgetc(fp);
-  }
-
-  // Parse number
-  while (cur >= '0' && cur <= '9') {
-    *dest = *dest * 10 + (cur - '0');
-    cur = fgetc(fp);
-  }
-
-  if (negative)
-    *dest = -(*dest);
-
-  return cur;
+static int pop_free_frame(void) {
+  list_elem_t *elem = list_pop_front(&free_frames);
+  int frame = *(int *)elem->data;
+  free(elem->data);
+  free(elem);
+  return frame;
 }
 
 void read_block(int b, int m) {
   for (int i = 0; i < BLOCK_SIZE; i++)
-    phys_mem[m * BLOCK_SIZE + i] = disk[b][i];
+    phys_mem[m + i] = disk[b][i];
 }
 
 void vm_init(FILE *fp) {
@@ -102,6 +84,35 @@ void vm_init(FILE *fp) {
       initialize_page(segment, page, frame);
     }
   }
+}
+
+int translate_va(int va) {
+  int s = va >> 18;
+  int w = va & 0x1FF;
+  int p = (va >> 9) & 0x1FF;
+  int pw = va & 0x3FFFF;
+
+  // Invalid VA
+  if (pw >= phys_mem[2 * s]) {
+    return -1;
+  }
+
+  // Page fault: PT is not resident
+  if (phys_mem[2 * s + 1] < 0) {
+    int frame = pop_free_frame();
+    read_block(-(phys_mem[2 * s + 1]), frame * BLOCK_SIZE);
+    phys_mem[2 * s + 1] = frame;
+  }
+
+  // Page fault: page is not resident
+  if (phys_mem[phys_mem[2 * s + 1] * BLOCK_SIZE + p] < 0) {
+    int frame = pop_free_frame();
+    read_block(-(phys_mem[phys_mem[2 * s + 1] * BLOCK_SIZE + p]),
+               frame * BLOCK_SIZE);
+    phys_mem[phys_mem[2 * s + 1] * BLOCK_SIZE + p] = frame;
+  }
+
+  return phys_mem[phys_mem[2 * s + 1] * BLOCK_SIZE + p] * BLOCK_SIZE + w;
 }
 
 void vm_cleanup(void) { free_list(&free_frames); }

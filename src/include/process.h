@@ -1,11 +1,12 @@
 #ifndef PROCESS_H
 #define PROCESS_H
 
-#include <stdint.h>
 #include "globals.h"
+#include <stdbool.h>
+#include <stdint.h>
 
-void create (priority_t level);
+void create(priority_t level);
 
-uint8_t destroy (uint8_t p_id, uint8_t recurring);
+int destroy(int p_id, bool recurring);
 
 #endif

@@ -18,7 +18,7 @@ void init(void) {
 
   // Pushing init process to low priority ready list
   list_elem_t *init_elem = (list_elem_t *)malloc(sizeof(list_elem_t));
-  uint8_t *tmp = (uint8_t *)malloc(sizeof(uint8_t));
+  int *tmp = (int *)malloc(sizeof(int));
   *tmp = 0;
   init_elem->data = (void *)tmp;
   list_push_back(&ready_lists[0], init_elem);

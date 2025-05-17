@@ -44,7 +44,7 @@ void test_initialization(void) {
 }
 
 void test_vm_initialization_1(void) {
-  FILE *file = fopen("tests/inputs/sample_vm_init_1.txt", "r");
+  FILE *file = fopen("inputs/sample_vm_init_1.txt", "r");
   if (!file) {
     perror("Could not open file");
     printf("test_vm_initialization_1 failed\n");
@@ -68,7 +68,7 @@ void test_vm_initialization_1(void) {
 }
 
 void test_vm_initialization_2(void) {
-  FILE *file = fopen("tests/inputs/sample_vm_init_2.txt", "r");
+  FILE *file = fopen("inputs/sample_vm_init_2.txt", "r");
   if (!file) {
     perror("Could not open file");
     printf("test_vm_initialization_2 failed\n");
