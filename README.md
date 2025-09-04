@@ -1,4 +1,4 @@
-# cs143b-project1
+# Simple OS for CS 143B
 
 ## Building and Running Test Executables
 
